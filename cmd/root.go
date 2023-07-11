@@ -105,8 +105,24 @@ func (r *rootOptions) runServer(_ *cobra.Command, _ []string) error {
 	/**
 	* Initialize Main
 	 */
+	d := infrastructure.Envs.YmirblogMySQL
 	adaptor := &adapters.Adapter{}
-	adaptor.Sync() // adapters init
+	
+	// init ymirblog
+	ymirblogDB := adapters.WithYmirblogMySQL(&adapters.YmirblogMySQL{
+			NetworkDB: adapters.NetworkDB{
+				Database: d.Database,
+				User:     d.User,
+				Password: d.Password,
+				Host:     d.Host,
+				Port:     d.Port,
+			},
+		})
+
+	adaptor.Sync(
+		ymirblogDB,
+	) // adapters init
+
 	var errCh chan error
 	/**
 	* Initialize HTTP
