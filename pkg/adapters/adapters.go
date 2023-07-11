@@ -27,6 +27,7 @@ type Driver[T client] interface {
 
 // Adapter components for external sources.
 type Adapter struct {
+	YmirblogMySQL *sql.Driver
 }
 
 // Option is Adapter type return func.
@@ -43,6 +44,12 @@ func (a *Adapter) Sync(opts ...Option) {
 // UnSync - release all adapter connection.
 func (a *Adapter) UnSync() error {
 	var errs []string
+	if a.YmirblogMySQL != nil {
+		log.Info().Msg("YmirblogMySQL is closed")
+		if err := a.YmirblogMySQL.Close(); err != nil {
+			errs = append(errs, err.Error())
+		}
+	}
 	if len(errs) > 0 {
 		err := fmt.Errorf(strings.Join(errs, "\n"))
 		log.Error().Err(err).Msg("UnSync adapter error")
