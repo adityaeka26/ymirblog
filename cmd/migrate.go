@@ -5,12 +5,24 @@ package cmd
 import (
 	"entgo.io/ent/dialect"
 	"github.com/spf13/cobra"
+	ymirBlogSchema "github.com/abialemuel/ymirblog/pkg/persist/ymirblog/diff"
 )
 
 type migrateOptions struct {
 	Name    string
 	Dialect string
 	DSN     string
+}
+
+func Dialect(d string) string {
+	switch d {
+	case dialect.Postgres:
+		return dialect.Postgres
+	case dialect.MySQL:
+		return dialect.MySQL
+	default:
+		return dialect.SQLite
+	}
 }
 
 func newMigrateCmd() *cobra.Command {
@@ -33,8 +45,11 @@ func newMigrateCmd() *cobra.Command {
 func (m *migrateOptions) Run(cmd *cobra.Command, _ []string) error {
 	switch m.Dialect {
 	case dialect.SQLite, dialect.MySQL:
-		return nil
+		if err := ymirBlogSchema.SchemaMigrate(m.Name, Dialect(m.Dialect), m.DSN); err != nil {
+			return err
+		}
 	default:
 		return cmd.Usage()
 	}
+	return nil
 }

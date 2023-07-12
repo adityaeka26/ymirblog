@@ -4,10 +4,12 @@ package cmd
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"entgo.io/ent/dialect"
 	"github.com/go-chi/chi/v5"
 	"github.com/kubuskotak/asgard/common"
 	pkgInf "github.com/kubuskotak/asgard/infrastructure"
@@ -21,6 +23,7 @@ import (
 	"github.com/abialemuel/ymirblog/pkg/adapters"
 	"github.com/abialemuel/ymirblog/pkg/api/rest"
 	"github.com/abialemuel/ymirblog/pkg/infrastructure"
+	"github.com/abialemuel/ymirblog/pkg/persist/ymirblog"
 	"github.com/abialemuel/ymirblog/pkg/version"
 )
 
@@ -107,21 +110,27 @@ func (r *rootOptions) runServer(_ *cobra.Command, _ []string) error {
 	 */
 	d := infrastructure.Envs.YmirblogMySQL
 	adaptor := &adapters.Adapter{}
-	
+
 	// init ymirblog
 	ymirblogDB := adapters.WithYmirblogMySQL(&adapters.YmirblogMySQL{
-			NetworkDB: adapters.NetworkDB{
-				Database: d.Database,
-				User:     d.User,
-				Password: d.Password,
-				Host:     d.Host,
-				Port:     d.Port,
-			},
-		})
+		NetworkDB: adapters.NetworkDB{
+			Database: d.Database,
+			User:     d.User,
+			Password: d.Password,
+			Host:     d.Host,
+			Port:     d.Port,
+		},
+	})
 
 	adaptor.Sync(
 		ymirblogDB,
 	) // adapters init
+
+	// create persistance instance
+	_ = ymirblog.Driver(
+		ymirblog.WithDriver(adaptor.YmirblogMySQL, dialect.MySQL),
+		ymirblog.WithTxIsolationLevel(sql.LevelSerializable),
+	)
 
 	var errCh chan error
 	/**
