@@ -1,7 +1,11 @@
 # https://taskfile.dev
+
 version: '3'
 
 includes:
+  ymirblog:
+    dir: ./pkg/persist/ymirblog
+    taskfile: ./pkg/persist/ymirblog/Taskfile.yml
 
 dotenv:
   - .env
