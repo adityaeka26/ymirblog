@@ -4,8 +4,8 @@ package cmd
 
 import (
 	"entgo.io/ent/dialect"
-	"github.com/spf13/cobra"
 	ymirBlogSchema "github.com/abialemuel/ymirblog/pkg/persist/ymirblog/diff"
+	"github.com/spf13/cobra"
 )
 
 type migrateOptions struct {
