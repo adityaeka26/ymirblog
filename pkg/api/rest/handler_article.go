@@ -58,11 +58,8 @@ func (a *Article) GetArticle(w http.ResponseWriter, r *http.Request) (GetArticle
 	var (
 		request GetArticleRequest
 	)
-	b, err := rest.Bind(r, &request)
+	request, err := rest.GetBind[GetArticleRequest](r)
 	if err != nil {
-		return GetArticleResponse{}, rest.ErrBadRequest(w, r, err)
-	}
-	if err := b.Validate(); err != nil {
 		return GetArticleResponse{}, rest.ErrBadRequest(w, r, err)
 	}
 
