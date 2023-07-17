@@ -4,6 +4,7 @@ package rest
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/abialemuel/ymirblog/pkg/entity"
 	"github.com/abialemuel/ymirblog/pkg/usecase/user"
@@ -55,7 +56,8 @@ func WithUserUsecase(u user.T) UserOption {
 func (u *User) Register(router chi.Router) {
 	// PLEASE EDIT THIS EXAMPLE, how to register handler to router
 	router.Post("/users", pkgRest.HandlerAdapter[CreateUserRequest](u.CreateUser).JSON)
-
+	router.Get("/users", pkgRest.HandlerAdapter[GetUserRequest](u.GetAllUser).JSON)
+	router.Get("/users/{id}", pkgRest.HandlerAdapter[GetUserRequestID](u.GetUserID).JSON)
 }
 
 // Create User handler
@@ -87,3 +89,46 @@ func (u *User) CreateUser(w http.ResponseWriter, r *http.Request) (GetUserRespon
 	}, nil
 }
 
+// GetUsers Handler
+func (u *User) GetAllUser(w http.ResponseWriter, r *http.Request) (GetAllUserRespone, error) {
+	users, err := u.UcUser.GetAllUser(r.Context())
+	if err != nil {
+		return GetAllUserRespone{}, err
+	}
+
+	userResponses := []UserResponse{
+		
+	}
+
+	for _, v := range users {
+		userResponse := UserResponse{
+			Name:  v.Name,
+			Email: v.Email,
+		}
+		userResponses = append(userResponses, userResponse)
+	}
+
+	return GetAllUserRespone{
+		Message: "succes",
+		Items:   userResponses,
+	}, nil
+}
+
+
+// GetUser By Id Handler
+func (u *User) GetUserID(w http.ResponseWriter, r *http.Request) (GetUserResponse, error) {
+	ID := chi.URLParam(r, "id")
+	id, _ := strconv.Atoi(ID)
+
+	userID, err := u.UcUser.GetUserID(r.Context(), id)
+	if err != nil {
+		return GetUserResponse{
+			Message: err.Error(),
+		}, rest.ErrBadRequest(w, r, err)
+	}
+
+	return GetUserResponse{
+		Message: "success",
+		User:    &userID,
+	}, nil
+}
