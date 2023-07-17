@@ -83,9 +83,14 @@ func (u *User) CreateUser(w http.ResponseWriter, r *http.Request) (GetUserRespon
 		}, rest.ErrBadRequest(w, r, err)
 	}
 
+	userRes := UserResponse{
+		ID: user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}
 	return GetUserResponse{
 		Message: "success",
-		User:    &user,
+		User:    &userRes,
 	}, nil
 }
 
@@ -102,6 +107,7 @@ func (u *User) GetAllUser(w http.ResponseWriter, r *http.Request) (GetAllUserRes
 
 	for _, v := range users {
 		userResponse := UserResponse{
+			ID: v.ID,
 			Name:  v.Name,
 			Email: v.Email,
 		}
@@ -120,15 +126,21 @@ func (u *User) GetUserID(w http.ResponseWriter, r *http.Request) (GetUserRespons
 	ID := chi.URLParam(r, "id")
 	id, _ := strconv.Atoi(ID)
 
-	userID, err := u.UcUser.GetUserID(r.Context(), id)
+	user, err := u.UcUser.GetUserID(r.Context(), id)
 	if err != nil {
 		return GetUserResponse{
 			Message: err.Error(),
 		}, rest.ErrBadRequest(w, r, err)
 	}
 
+	userRes := UserResponse{
+		ID : user.ID,
+		Name: user.Name,
+		Email: user.Email,
+	}
+
 	return GetUserResponse{
 		Message: "success",
-		User:    &userID,
+		User:    &userRes,
 	}, nil
 }
