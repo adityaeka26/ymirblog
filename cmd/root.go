@@ -25,6 +25,7 @@ import (
 	"github.com/abialemuel/ymirblog/pkg/infrastructure"
 	"github.com/abialemuel/ymirblog/pkg/persist/ymirblog"
 	"github.com/abialemuel/ymirblog/pkg/usecase"
+	usecaseUser "github.com/abialemuel/ymirblog/pkg/usecase/user"
 	"github.com/abialemuel/ymirblog/pkg/version"
 	usecaseArticle "github.com/abialemuel/ymirblog/pkg/usecase/article"
 )
@@ -126,6 +127,7 @@ func (r *rootOptions) runServer(_ *cobra.Command, _ []string) error {
 
 	adaptor.Sync(
 		ymirblogDB,
+		usecaseUser.WithYmirBlogPersist(),
 		usecaseArticle.WithYmirBlogPersist(),
 	) // adapters init
 
@@ -147,11 +149,16 @@ func (r *rootOptions) runServer(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+	userUsecase, err := usecase.Get[usecaseUser.T](adaptor)
+	if err != nil {
+		return err
+	}
 	// http register handlers
 	h.Handler(rest.Routes().Register(
 		func(c chi.Router) http.Handler {
 			rest.NewArticle(
 				rest.WithArticleUsecase(articleUsecase),
+        rest.WithUserUsecase(userUsecase),
 			).Register(c)
 			return c
 		},

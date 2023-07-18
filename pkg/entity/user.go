@@ -2,7 +2,18 @@ package entity
 
 // User is the entity that represents a user.
 type User struct {
-	ID    int    `json:"id" `
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"email,required"`
+	ID    int
+	Name  string
+	Email string
+}
+
+type CreateUserPayload struct {
+	Name  string
+	Email string
+}
+
+type UpdateUserPayload struct {
+	ID    int
+	Name  string
+	Email string
 }
