@@ -3,12 +3,11 @@ package rest
 
 // GetUserRequest Get a User request.  /** PLEASE EDIT THIS EXAMPLE, request handler */.
 type GetUserRequest struct {
-	
 }
 
 // GetUserRequestID Get a User request by ID.  /** PLEASE EDIT THIS EXAMPLE, request handler */.
 type GetUserRequestID struct {
-	ID    int    `json:"id"`
+	ID int `json:"id"`
 }
 
 // GetUserCSVRequest Get a User request.  /** PLEASE EDIT THIS EXAMPLE, request handler */.
@@ -28,10 +27,9 @@ type UpdateUserRequest struct {
 	Email string `json:"email" validate:"email,required"`
 }
 
-
 // GetUserResponse Get a User response.  /** PLEASE EDIT THIS EXAMPLE, return handler response */.
 type GetUserResponse struct {
-	Message string        `json:"message"`
+	Message string         `json:"message"`
 	User    *UserResponse  `json:"user,omitempty"`
 	Users   []UserResponse `json:"users,omitempty"`
 }
@@ -42,8 +40,7 @@ type UserResponse struct {
 	Email string `json:"email" validate:"email,required"`
 }
 
-type GetAllUserRespone struct{
-	Message string        `json:"message"`
-	Items []UserResponse `json:"items"`
+type GetAllUserRespone struct {
+	Message string         `json:"message"`
+	Items   []UserResponse `json:"items"`
 }
-

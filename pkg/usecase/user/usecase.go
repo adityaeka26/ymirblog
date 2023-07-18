@@ -25,7 +25,6 @@ func (i *impl) CreateUser(ctx context.Context, newUser entity.CreateUserPayload)
 	return res, err
 }
 
-
 // get all user usecase
 func (i *impl) GetAllUser(ctx context.Context) ([]entity.User, error) {
 	span := trace.SpanFromContext(ctx)
@@ -51,7 +50,6 @@ func (i *impl) GetAllUser(ctx context.Context) ([]entity.User, error) {
 	return getAllUser, nil
 }
 
-
 // Get User By Id
 func (i *impl) GetUserID(ctx context.Context, ID int) (entity.User, error) {
 	span := trace.SpanFromContext(ctx)
@@ -74,12 +72,12 @@ func (i *impl) GetUserID(ctx context.Context, ID int) (entity.User, error) {
 }
 
 // Update User By Id
-func (i *impl) UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateUserPayload) (entity.User, error)  {
+func (i *impl) UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateUserPayload) (entity.User, error) {
 	// Update User
 	user, err := i.adapter.YmirblogPersist.User.UpdateOneID(ID).
-	SetName(updateUser.Name).
-	SetEmail(updateUser.Email).
-	Save(ctx)
+		SetName(updateUser.Name).
+		SetEmail(updateUser.Email).
+		Save(ctx)
 	if err != nil {
 		return entity.User{}, err
 	}
