@@ -16,7 +16,7 @@ func (i *impl) CreateUser(ctx context.Context, newUser entity.CreateUserPayload)
 		SetEmail(newUser.Email).
 		Save(ctx)
 
-	// mapping *ent.User to entity.User
+	// mapping *entUser to entity.User
 	res := entity.User{
 		ID:    entUser.ID,
 		Name:  entUser.Name,
@@ -71,4 +71,24 @@ func (i *impl) GetUserID(ctx context.Context, ID int) (entity.User, error) {
 	}
 
 	return userID, nil
+}
+
+// Update User By Id
+func (i *impl) UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateUserPayload) (entity.User, error)  {
+	// Update User
+	user, err := i.adapter.YmirblogPersist.User.UpdateOneID(ID).
+	SetName(updateUser.Name).
+	SetEmail(updateUser.Email).
+	Save(ctx)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	// mapping *User to resUpdateUser
+	resUpdateUser := entity.User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return resUpdateUser, err
 }

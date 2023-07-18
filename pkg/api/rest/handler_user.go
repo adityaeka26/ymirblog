@@ -58,6 +58,7 @@ func (u *User) Register(router chi.Router) {
 	router.Post("/users", pkgRest.HandlerAdapter[CreateUserRequest](u.CreateUser).JSON)
 	router.Get("/users", pkgRest.HandlerAdapter[GetUserRequest](u.GetAllUser).JSON)
 	router.Get("/users/{id}", pkgRest.HandlerAdapter[GetUserRequestID](u.GetUserID).JSON)
+	router.Patch("/users/{id}", pkgRest.HandlerAdapter[UpdateUserRequest](u.UpdateUser).JSON)
 }
 
 // Create User handler
@@ -137,6 +138,44 @@ func (u *User) GetUserID(w http.ResponseWriter, r *http.Request) (GetUserRespons
 		ID : user.ID,
 		Name: user.Name,
 		Email: user.Email,
+	}
+
+	return GetUserResponse{
+		Message: "success",
+		User:    &userRes,
+	}, nil
+}
+
+// Update User Handler
+func (u *User) UpdateUser(w http.ResponseWriter, r *http.Request) (GetUserResponse, error) {
+	//update user
+	ID := chi.URLParam(r, "id")
+	id, _ := strconv.Atoi(ID)
+
+	request, err := rest.GetBind[UpdateUserRequest](r)
+	fmt.Println(err)
+
+	if err != nil {
+		fmt.Println(err, "error getbind")
+		return GetUserResponse{}, rest.ErrBadRequest(w, r, err)
+	}
+	
+	payload := entity.UpdateUserPayload{
+		Name:  request.Name,
+		Email: request.Email,
+	}
+
+	userUpdate, err := u.UcUser.UpdateUser(r.Context(), id, payload)
+	if err != nil {
+		return GetUserResponse{
+			Message: err.Error(),
+		}, rest.ErrBadRequest(w, r, err)
+	}
+
+	userRes := UserResponse{
+		ID : userUpdate.ID,
+		Name: userUpdate.Name,
+		Email: userUpdate.Email,
 	}
 
 	return GetUserResponse{

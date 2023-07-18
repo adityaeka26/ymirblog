@@ -28,6 +28,8 @@ type T interface {
 	CreateUser(ctx context.Context, newUser entity.CreateUserPayload) (entity.User, error)
 	GetAllUser(ctx context.Context) ([]entity.User, error)
 	GetUserID(ctx context.Context, ID int) (entity.User, error)
+	UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateUserPayload) (entity.User, error)
+	
 }
 
 type impl struct {

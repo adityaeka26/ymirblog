@@ -11,3 +11,9 @@ type CreateUserPayload struct {
 	Name  string
 	Email string
 }
+
+type UpdateUserPayload struct {
+	ID    int
+	Name  string
+	Email string
+}
