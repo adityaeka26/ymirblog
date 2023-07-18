@@ -1,5 +1,5 @@
-// Package user is implements component logic.
-package user
+// Package article is implements component logic.
+package article
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 
 func init() {
 	usecase.Register(usecase.Registration{
-		Name: "user",
+		Name: "article",
 		Inf:  reflect.TypeOf((*T)(nil)).Elem(),
 		New: func() any {
 			return &impl{}
@@ -23,20 +23,16 @@ func init() {
 	})
 }
 
-// T is the interface implemented by all user Component implementations.
+// T is the interface implemented by all article Component implementations.
 type T interface {
-	CreateUser(ctx context.Context, newUser entity.CreateUserPayload) (entity.User, error)
-	GetAllUser(ctx context.Context) ([]entity.User, error)
-	GetUserID(ctx context.Context, ID int) (entity.User, error)
-	UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateUserPayload) (entity.User, error)
-	DeleteUser(ctx context.Context, ID int) error
+	GetAll(ctx context.Context, request entity.GetArticlePayload) (entity.ArticlesWithPagination, error)
 }
 
 type impl struct {
 	adapter *adapters.Adapter
 }
 
-// Init initializes the execution of a process involved in a user Component usecase.
+// Init initializes the execution of a process involved in a article Component usecase.
 func (i *impl) Init(adapter *adapters.Adapter) error {
 	i.adapter = adapter
 	return nil
@@ -44,7 +40,7 @@ func (i *impl) Init(adapter *adapters.Adapter) error {
 
 func WithYmirBlogPersist() adapters.Option {
 	return func(a *adapters.Adapter) {
-		// adapter ymirblog sqlite
+		// adapter  MySQL
 		if a.YmirblogMySQL == nil {
 			panic(fmt.Errorf("%s is not found", "YmirBlogMySQL"))
 		}
@@ -52,6 +48,7 @@ func WithYmirBlogPersist() adapters.Option {
 		var c = ymirblog.Driver(
 			ymirblog.WithDriver(a.YmirblogMySQL, dialect.MySQL),
 		)
+
 		a.YmirblogPersist = c
 	}
 }

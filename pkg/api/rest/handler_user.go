@@ -86,7 +86,7 @@ func (u *User) CreateUser(w http.ResponseWriter, r *http.Request) (GetUserRespon
 	}
 
 	userRes := UserResponse{
-		ID: user.ID,
+		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 	}
@@ -103,13 +103,11 @@ func (u *User) GetAllUser(w http.ResponseWriter, r *http.Request) (GetAllUserRes
 		return GetAllUserRespone{}, err
 	}
 
-	userResponses := []UserResponse{
-		
-	}
+	userResponses := []UserResponse{}
 
 	for _, v := range users {
 		userResponse := UserResponse{
-			ID: v.ID,
+			ID:    v.ID,
 			Name:  v.Name,
 			Email: v.Email,
 		}
@@ -121,7 +119,6 @@ func (u *User) GetAllUser(w http.ResponseWriter, r *http.Request) (GetAllUserRes
 		Items:   userResponses,
 	}, nil
 }
-
 
 // GetUser By Id Handler
 func (u *User) GetUserID(w http.ResponseWriter, r *http.Request) (GetUserResponse, error) {
@@ -136,8 +133,8 @@ func (u *User) GetUserID(w http.ResponseWriter, r *http.Request) (GetUserRespons
 	}
 
 	userRes := UserResponse{
-		ID : user.ID,
-		Name: user.Name,
+		ID:    user.ID,
+		Name:  user.Name,
 		Email: user.Email,
 	}
 
@@ -160,7 +157,7 @@ func (u *User) UpdateUser(w http.ResponseWriter, r *http.Request) (GetUserRespon
 		fmt.Println(err, "error getbind")
 		return GetUserResponse{}, rest.ErrBadRequest(w, r, err)
 	}
-	
+
 	payload := entity.UpdateUserPayload{
 		Name:  request.Name,
 		Email: request.Email,
@@ -174,8 +171,8 @@ func (u *User) UpdateUser(w http.ResponseWriter, r *http.Request) (GetUserRespon
 	}
 
 	userRes := UserResponse{
-		ID : userUpdate.ID,
-		Name: userUpdate.Name,
+		ID:    userUpdate.ID,
+		Name:  userUpdate.Name,
 		Email: userUpdate.Email,
 	}
 
