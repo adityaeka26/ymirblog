@@ -1,6 +1,8 @@
 // Package rest is port handler.
 package rest
 
+// REQUEST HANDLER
+
 // GetUserRequest Get a User request.  /** PLEASE EDIT THIS EXAMPLE, request handler */.
 type GetUserRequest struct {
 	
@@ -10,6 +12,11 @@ type GetUserRequest struct {
 type GetUserRequestID struct {
 	ID    int    `json:"id"`
 }
+
+type DeleteUserRequestID struct {
+	ID    int    `json:"id"`
+}
+
 
 // GetUserCSVRequest Get a User request.  /** PLEASE EDIT THIS EXAMPLE, request handler */.
 type GetUserCSVRequest struct {
@@ -28,6 +35,7 @@ type UpdateUserRequest struct {
 	Email string `json:"email" validate:"email,required"`
 }
 
+// RESPONSE HANDLER
 
 // GetUserResponse Get a User response.  /** PLEASE EDIT THIS EXAMPLE, return handler response */.
 type GetUserResponse struct {

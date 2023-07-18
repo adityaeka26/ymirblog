@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 
 	"github.com/abialemuel/ymirblog/pkg/entity"
 	"github.com/kubuskotak/asgard/tracer"
@@ -91,4 +92,24 @@ func (i *impl) UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateU
 		Email: user.Email,
 	}
 	return resUpdateUser, err
+}
+
+// delete user
+func (i *impl) DeleteUser(ctx context.Context, ID int) error  {
+	span := trace.SpanFromContext(ctx)
+	defer span.End()
+	l := log.Hook(tracer.TraceContextHook(ctx))
+
+	// validate persist connection
+	if i.adapter.YmirblogPersist == nil {
+		return errors.New("ymir blog persistence connection is nil")
+	}
+
+	err := i.adapter.YmirblogPersist.User.DeleteOneID(ID).Exec(ctx)
+	if err != nil {
+		l.Error().Err(err).Msg("Delete ID")
+		return err
+	}
+
+	return err
 }
