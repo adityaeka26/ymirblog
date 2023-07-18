@@ -27,6 +27,7 @@ import (
 	"github.com/abialemuel/ymirblog/pkg/usecase"
 	usecaseUser "github.com/abialemuel/ymirblog/pkg/usecase/user"
 	"github.com/abialemuel/ymirblog/pkg/version"
+	usecaseArticle "github.com/abialemuel/ymirblog/pkg/usecase/article"
 )
 
 type rootOptions struct {
@@ -127,6 +128,7 @@ func (r *rootOptions) runServer(_ *cobra.Command, _ []string) error {
 	adaptor.Sync(
 		ymirblogDB,
 		usecaseUser.WithYmirBlogPersist(),
+		usecaseArticle.WithYmirBlogPersist(),
 	) // adapters init
 
 	// create persistance instance
@@ -143,16 +145,20 @@ func (r *rootOptions) runServer(_ *cobra.Command, _ []string) error {
 		pkgRest.WithPort(strconv.Itoa(infrastructure.Envs.Ports.HTTP)),
 	)
 
+	articleUsecase, err := usecase.Get[usecaseArticle.T](adaptor)
+	if err != nil {
+		return err
+	}
 	userUsecase, err := usecase.Get[usecaseUser.T](adaptor)
 	if err != nil {
 		return err
 	}
-
 	// http register handlers
 	h.Handler(rest.Routes().Register(
 		func(c chi.Router) http.Handler {
-			rest.NewUser(
-				rest.WithUserUsecase(userUsecase),
+			rest.NewArticle(
+				rest.WithArticleUsecase(articleUsecase),
+        rest.WithUserUsecase(userUsecase),
 			).Register(c)
 			return c
 		},
