@@ -59,6 +59,7 @@ func (u *User) Register(router chi.Router) {
 	router.Get("/users", pkgRest.HandlerAdapter[GetUserRequest](u.GetAllUser).JSON)
 	router.Get("/users/{id}", pkgRest.HandlerAdapter[GetUserRequestID](u.GetUserID).JSON)
 	router.Patch("/users/{id}", pkgRest.HandlerAdapter[UpdateUserRequest](u.UpdateUser).JSON)
+	router.Delete("/users/{id}", pkgRest.HandlerAdapter[DeleteUserRequestID](u.DeleteUser).JSON)
 }
 
 // Create User handler
@@ -178,5 +179,21 @@ func (u *User) UpdateUser(w http.ResponseWriter, r *http.Request) (GetUserRespon
 	return GetUserResponse{
 		Message: "success",
 		User:    &userRes,
+	}, nil
+}
+
+func (u *User) DeleteUser(w http.ResponseWriter, r *http.Request) (GetUserResponse, error)  {
+	ID := chi.URLParam(r, "id")
+	id, _ := strconv.Atoi(ID)
+
+	err := u.UcUser.DeleteUser(r.Context(), id)
+	if err != nil {
+		return GetUserResponse{
+			Message: err.Error(),
+		}, rest.ErrBadRequest(w, r, err)
+	}
+
+	return GetUserResponse{
+		Message: "success",
 	}, nil
 }

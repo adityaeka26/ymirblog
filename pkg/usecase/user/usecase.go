@@ -11,7 +11,8 @@ import (
 
 func (i *impl) CreateUser(ctx context.Context, newUser entity.CreateUserPayload) (entity.User, error) {
 	//create user
-	entUser, err := i.adapter.YmirblogPersist.User.Create().
+	client := i.adapter.YmirblogPersist
+	entUser, err := client.User.Create().
 		SetName(newUser.Name).
 		SetEmail(newUser.Email).
 		Save(ctx)
@@ -31,7 +32,8 @@ func (i *impl) GetAllUser(ctx context.Context) ([]entity.User, error) {
 	defer span.End()
 	l := log.Hook(tracer.TraceContextHook(ctx))
 
-	users, err := i.adapter.YmirblogPersist.User.Query().All(ctx)
+	client := i.adapter.YmirblogPersist
+	users, err := client.User.Query().All(ctx)
 	if err != nil {
 		l.Error().Err(err).Msg("GetAll")
 		return nil, err
@@ -56,7 +58,8 @@ func (i *impl) GetUserID(ctx context.Context, ID int) (entity.User, error) {
 	defer span.End()
 	l := log.Hook(tracer.TraceContextHook(ctx))
 
-	user, err := i.adapter.YmirblogPersist.User.Get(ctx, ID)
+	client := i.adapter.YmirblogPersist
+	user, err := client.User.Get(ctx, ID)
 	if err != nil {
 		l.Error().Err(err).Msg("GetBy ID")
 		return entity.User{}, err
@@ -74,7 +77,8 @@ func (i *impl) GetUserID(ctx context.Context, ID int) (entity.User, error) {
 // Update User By Id
 func (i *impl) UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateUserPayload) (entity.User, error) {
 	// Update User
-	user, err := i.adapter.YmirblogPersist.User.UpdateOneID(ID).
+	client := i.adapter.YmirblogPersist
+	user, err := client.User.UpdateOneID(ID).
 		SetName(updateUser.Name).
 		SetEmail(updateUser.Email).
 		Save(ctx)
@@ -89,4 +93,21 @@ func (i *impl) UpdateUser(ctx context.Context, ID int, updateUser entity.UpdateU
 		Email: user.Email,
 	}
 	return resUpdateUser, err
+}
+
+// delete user
+func (i *impl) DeleteUser(ctx context.Context, ID int) error  {
+	span := trace.SpanFromContext(ctx)
+	defer span.End()
+	l := log.Hook(tracer.TraceContextHook(ctx))
+
+	client := i.adapter.YmirblogPersist
+
+	err := client.User.DeleteOneID(ID).Exec(ctx)
+	if err != nil {
+		l.Error().Err(err).Msg("Delete ID")
+		return err
+	}
+
+	return err
 }
