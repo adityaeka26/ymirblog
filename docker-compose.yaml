@@ -1,0 +1,28 @@
+version: "3.7"
+volumes:
+  mysql_data:
+    driver: local
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    restart: always
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pw
+      - MYSQL_ROOT_PASSWORD=pw
+      - MYSQL_DATABASE=db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  svc:
+    build: .
+    depends_on:
+       - mysql
+    ports:
+      - "8007:8007"
+    volumes:
+      - .data:/.data
+    env_file:
+      - .env
