@@ -9,7 +9,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/kubuskotak/asgard v0.0.0-20230626084609-98879813b02f
+	github.com/kubuskotak/asgard v0.0.0-20230723024742-e73d9a16f51d
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/cobra v1.7.0
