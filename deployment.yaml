@@ -94,6 +94,17 @@ spec:
         resources:
           requests:
             cpu: 50m
+        env:
+        - name: YMIRBLOG_MYSQL_DATABASE
+          value: db
+        - name: YMIRBLOG_MYSQL_USER
+          value: root
+        - name: YMIRBLOG_MYSQL_PASSWORD
+          value: pw
+        - name: YMIRBLOG_MYSQL_HOST
+          value: mysql
+        - name: YMIRBLOG_MYSQL_PORT
+          value: "3306"
 
 ---
 apiVersion: autoscaling/v1
