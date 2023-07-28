@@ -86,7 +86,7 @@ spec:
     spec:
       containers:
       - name: ymirblog
-        image:  asia.gcr.io/$PROJECT_ID/production/ymirblog:$SHORT_SHA
+        image: adityaeka26/ymirblog:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8007
@@ -121,35 +121,35 @@ spec:
     name: ymirblog
   targetCPUUtilizationPercentage: 100
 
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ymirblog
-  namespace: production
-  annotations:
-    kubernetes.io/ingress.global-static-ip-name: playground
-    kubernetes.io/ingress.allow-http: "false"
-    networking.gke.io/managed-certificates: ymirblog
-spec:
-  rules:
-    - host: ymirblog.adityaeka.my.id
-      http:
-        paths:
-        - path: /*
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: ymirblog
-              port: 
-                number: 80
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: ymirblog
+#   namespace: production
+#   annotations:
+#     kubernetes.io/ingress.global-static-ip-name: playground
+#     kubernetes.io/ingress.allow-http: "false"
+#     networking.gke.io/managed-certificates: ymirblog
+# spec:
+#   rules:
+#     - host: ymirblog.adityaeka.my.id
+#       http:
+#         paths:
+#         - path: /*
+#           pathType: ImplementationSpecific
+#           backend:
+#             service:
+#               name: ymirblog
+#               port: 
+#                 number: 80
 
----
-apiVersion: networking.gke.io/v1beta2
-kind: ManagedCertificate
-metadata:
-  name: ymirblog
-  namespace: production
-spec:
-  domains:
-    - ymirblog.adityaeka.my.id
+# ---
+# apiVersion: networking.gke.io/v1beta2
+# kind: ManagedCertificate
+# metadata:
+#   name: ymirblog
+#   namespace: production
+# spec:
+#   domains:
+#     - ymirblog.adityaeka.my.id
