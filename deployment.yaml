@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ymirblog
+  namespace: production
+  labels:
+    app: ymirblog
+spec:
+  selector:
+    app: ymirblog
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8007
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ymirblog
+  namespace: production
+spec:
+  selector:
+    matchLabels:
+      app: ymirblog
+  strategy:
+    type: RollingUpdate
+  template: #Template for container
+    metadata:
+      labels:
+        app: ymirblog
+    spec:
+      containers:
+      - name: ymirblog
+        image:  asia.gcr.io/$PROJECT_ID/production/ymirblog:$SHORT_SHA
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8007
+          name: ymirblog
+        resources:
+          requests:
+            cpu: 50m
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ymirblog
+  namespace: production
+spec:
+  maxReplicas: 10
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ymirblog
+  targetCPUUtilizationPercentage: 100
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ymirblog
+  namespace: production
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: playground
+    kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/managed-certificates: ymirblog
+spec:
+  rules:
+    - host: ymirblog.adityaeka.my.id
+      http:
+        paths:
+        - path: /*
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: ymirblog
+              port: 
+                number: 80
+
+---
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: ymirblog
+  namespace: production
+spec:
+  domains:
+    - ymirblog.adityaeka.my.id
