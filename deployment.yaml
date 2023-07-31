@@ -1,50 +1,50 @@
 # service mysql
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: mysql
-  name: mysql
-spec:
-  selector:
-    app: mysql
-  ports:
-    - port: 3306
-      targetPort: 3306
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   labels:
+#     app: mysql
+#   name: mysql
+# spec:
+#   selector:
+#     app: mysql
+#   ports:
+#     - port: 3306
+#       targetPort: 3306
 ---
 # deployment mysql
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mysql
-  labels:
-    app: mysql
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mysql
-  template:
-    metadata:
-      labels:
-        app: mysql
-    spec:
-      containers:
-      - name: mysql
-        image: mysql:8.0.33
-        ports:
-        - containerPort: 3306
-        env:
-        - name: MYSQL_ALLOW_EMPTY_ROOT_PASSWORD
-          value: "0"
-        - name: MYSQL_USER
-          value: user
-        - name: MYSQL_PASSWORD
-          value: pw
-        - name: MYSQL_ROOT_PASSWORD
-          value: pw
-        - name: MYSQL_DATABASE
-          value: db
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mysql
+#   labels:
+#     app: mysql
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: mysql
+#   template:
+#     metadata:
+#       labels:
+#         app: mysql
+#     spec:
+#       containers:
+#       - name: mysql
+#         image: mysql:8.0.33
+#         ports:
+#         - containerPort: 3306
+#         env:
+#         - name: MYSQL_ALLOW_EMPTY_ROOT_PASSWORD
+#           value: "0"
+#         - name: MYSQL_USER
+#           value: user
+#         - name: MYSQL_PASSWORD
+#           value: pw
+#         - name: MYSQL_ROOT_PASSWORD
+#           value: pw
+#         - name: MYSQL_DATABASE
+#           value: db
 ---
 # service ymirblog
 apiVersion: v1
@@ -94,9 +94,9 @@ spec:
         - name: YMIRBLOG_MYSQL_USER
           value: user
         - name: YMIRBLOG_MYSQL_PASSWORD
-          value: pw
+          value: leomessi
         - name: YMIRBLOG_MYSQL_HOST
-          value: mysql
+          value: "10.32.160.3"
         - name: YMIRBLOG_MYSQL_PORT
           value: "3306"
 ---
