@@ -1,9 +1,4 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: production
-
----
+# service mysql
 apiVersion: v1
 kind: Service
 metadata:
@@ -16,13 +11,12 @@ spec:
   ports:
     - port: 3306
       targetPort: 3306
-
 ---
+# deployment mysql
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: production
   labels:
     app: mysql
 spec:
@@ -41,6 +35,8 @@ spec:
         ports:
         - containerPort: 3306
         env:
+        - name: MYSQL_ALLOW_EMPTY_ROOT_PASSWORD
+          value: "0"
         - name: MYSQL_USER
           value: user
         - name: MYSQL_PASSWORD
@@ -49,13 +45,12 @@ spec:
           value: pw
         - name: MYSQL_DATABASE
           value: db
-
 ---
+# service ymirblog
 apiVersion: v1
 kind: Service
 metadata:
   name: ymirblog
-  namespace: production
   labels:
     app: ymirblog
 spec:
@@ -66,20 +61,19 @@ spec:
     name: http
     targetPort: 8007
   type: NodePort
-
 ---
+# deployment ymirblog
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ymirblog
-  namespace: production
 spec:
   selector:
     matchLabels:
       app: ymirblog
   strategy:
     type: RollingUpdate
-  template: #Template for container
+  template:
     metadata:
       labels:
         app: ymirblog
@@ -98,58 +92,76 @@ spec:
         - name: YMIRBLOG_MYSQL_DATABASE
           value: db
         - name: YMIRBLOG_MYSQL_USER
-          value: root
+          value: user
         - name: YMIRBLOG_MYSQL_PASSWORD
           value: pw
         - name: YMIRBLOG_MYSQL_HOST
           value: mysql
         - name: YMIRBLOG_MYSQL_PORT
           value: "3306"
-
 ---
+# autoscaling ymirblog
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: ymirblog
-  namespace: production
 spec:
-  maxReplicas: 10
-  minReplicas: 3
+  maxReplicas: 3
+  minReplicas: 2
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: ymirblog
   targetCPUUtilizationPercentage: 100
-
-# ---
+---
+# ingress local (minikube)
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
 # metadata:
 #   name: ymirblog
-#   namespace: production
 #   annotations:
-#     kubernetes.io/ingress.global-static-ip-name: playground
-#     kubernetes.io/ingress.allow-http: "false"
-#     networking.gke.io/managed-certificates: ymirblog
+#     nginx.ingress.kubernetes.io/rewrite-target: /
 # spec:
 #   rules:
-#     - host: ymirblog.adityaeka.my.id
+#     - host: ymirblog.info
 #       http:
 #         paths:
-#         - path: /*
-#           pathType: ImplementationSpecific
-#           backend:
-#             service:
-#               name: ymirblog
-#               port: 
-#                 number: 80
-
-# ---
-# apiVersion: networking.gke.io/v1beta2
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: ymirblog
+#                 port:
+#                   number: 8007
+---
+# ingress production
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ymirblog
+  annotations:
+    # kubernetes.io/ingress.global-static-ip-name: ymirblog
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: ymirblog.adityaeka.my.id
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: ymirblog
+              port: 
+                number: 80
+---
+# ssl
+# apiVersion: networking.gke.io/v1
 # kind: ManagedCertificate
 # metadata:
 #   name: ymirblog
-#   namespace: production
 # spec:
 #   domains:
 #     - ymirblog.adityaeka.my.id
